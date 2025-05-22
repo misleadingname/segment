@@ -10,14 +10,26 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // === CONFIGURATION ===
-const ELEMENT_APP_PATH = "/Applications/Element Nightly.app/Contents/Resources";
+
+// === WINDOWS ==
+const ELEMENT_APP_PATH = "C:\\Users\\kikin\\AppData\\Local\\element-desktop-nightly\\app-0.0.1-nightly2025052204\\resources";
 const ASAR_PATH = path.join(ELEMENT_APP_PATH, "app.asar");
 const ASAR_BACKUP_PATH = path.join(ELEMENT_APP_PATH, "app.asar.backup");
 const UNPACKED_PATH = path.join(ELEMENT_APP_PATH, "app-unpacked");
 const SYMLINK_PATH = path.join(ELEMENT_APP_PATH, "app");
 const INJECT_SCRIPT_PATH = path.resolve(__dirname, "../dist/loader.js");
-const RUNTIME_FILE = path.resolve(ELEMENT_APP_PATH, "../MacOS/Element Nightly");
-const MAIN_FILE = "lib/electron-main.js";
+const RUNTIME_FILE = "C:\\Users\\kikin\\AppData\\Local\\element-desktop-nightly\\app-0.0.1-nightly2025052204\\Element Nightly.exe";
+const MAIN_FILE = "lib\\electron-main.js";
+
+// === MAC OS ===
+// const ELEMENT_APP_PATH = "/Applications/Element Nightly.app/Contents/Resources";
+// const ASAR_PATH = path.join(ELEMENT_APP_PATH, "app.asar");
+// const ASAR_BACKUP_PATH = path.join(ELEMENT_APP_PATH, "app.asar.backup");
+// const UNPACKED_PATH = path.join(ELEMENT_APP_PATH, "app-unpacked");
+// const SYMLINK_PATH = path.join(ELEMENT_APP_PATH, "app");
+// const INJECT_SCRIPT_PATH = path.resolve(__dirname, "../dist/loader.js");
+// const RUNTIME_FILE = path.resolve(ELEMENT_APP_PATH, "../MacOS/Element Nightly");
+// const MAIN_FILE = "lib/electron-main.js";
 
 async function main() {
 	console.log("📦 Starting Element injection...");
@@ -45,7 +57,7 @@ async function main() {
 
 	console.log("✏️ Injecting loader...");
 	let code = fs.readFileSync(mainFilePath, "utf8");
-	const injectLine = `require("${INJECT_SCRIPT_PATH.replace(/\\/g, "\\\\")}");`;
+	const injectLine = `import("${INJECT_SCRIPT_PATH.replace(/\\/g, "\\\\")}");`;
 
 	if (code.includes(injectLine)) {
 		console.log("✅ Already injected, skipping.");

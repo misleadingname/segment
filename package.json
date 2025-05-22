@@ -19,5 +19,10 @@
 		"build": "tsc",
 		"inject": "tsx ./scripts/injector.mts",
 		"restore": "tsx ./scripts/restore.mts"
+	},
+	"dependencies": {
+		"electron": "^36.2.1",
+		"path": "^0.12.7",
+		"url": "^0.11.4"
 	}
 }
