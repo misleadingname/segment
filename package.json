@@ -1,0 +1,23 @@
+{
+	"name": "Segment",
+	"version": "0.0.1poc",
+	"description": "Experimental client modding toolkit for Matrix's Element",
+	"repository": "https://github.com/misleadingname/segment",
+	"author": "MisleadingName, Segment Contributors",
+	"license": "MPL-2.0",
+	"private": true,
+	"devDependencies": {
+		"@electron/fuses": "^1.8.0",
+		"@types/fs-extra": "^11.0.4",
+		"@types/node": "^22.15.21",
+		"asar": "^3.2.0",
+		"fs-extra": "^11.3.0",
+		"tsx": "^4.19.4",
+		"typescript": "^5.8.3"
+	},
+	"scripts": {
+		"build": "tsc",
+		"inject": "tsx ./scripts/injector.mts",
+		"restore": "tsx ./scripts/restore.mts"
+	}
+}
