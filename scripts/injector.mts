@@ -2,8 +2,9 @@
 import fs from "fs-extra";
 import path from "path";
 import asar from "asar";
-import { fileURLToPath } from "url";
+import { fileURLToPath, pathToFileURL } from "url";
 import { flipFuses, FuseV1Options, FuseVersion } from "@electron/fuses";
+import os from "os";
 
 // @ts-ignore
 const __filename = fileURLToPath(import.meta.url);
@@ -11,25 +12,40 @@ const __dirname = path.dirname(__filename);
 
 // === CONFIGURATION ===
 
-// === WINDOWS ==
-const ELEMENT_APP_PATH = "C:\\Users\\kikin\\AppData\\Local\\element-desktop-nightly\\app-0.0.1-nightly2025052204\\resources";
-const ASAR_PATH = path.join(ELEMENT_APP_PATH, "app.asar");
-const ASAR_BACKUP_PATH = path.join(ELEMENT_APP_PATH, "app.asar.backup");
-const UNPACKED_PATH = path.join(ELEMENT_APP_PATH, "app-unpacked");
-const SYMLINK_PATH = path.join(ELEMENT_APP_PATH, "app");
-const INJECT_SCRIPT_PATH = path.resolve(__dirname, "../dist/loader.js");
-const RUNTIME_FILE = "C:\\Users\\kikin\\AppData\\Local\\element-desktop-nightly\\app-0.0.1-nightly2025052204\\Element Nightly.exe";
-const MAIN_FILE = "lib\\electron-main.js";
+let LOCAL_APPDATA;
+let ELEMENT_APP_PATH;
+let ASAR_PATH;
+let ASAR_BACKUP_PATH;
+let UNPACKED_PATH;
+let SYMLINK_PATH;
+let INJECT_SCRIPT_PATH;
+let RUNTIME_FILE;
+let MAIN_FILE;
 
-// === MAC OS ===
-// const ELEMENT_APP_PATH = "/Applications/Element Nightly.app/Contents/Resources";
-// const ASAR_PATH = path.join(ELEMENT_APP_PATH, "app.asar");
-// const ASAR_BACKUP_PATH = path.join(ELEMENT_APP_PATH, "app.asar.backup");
-// const UNPACKED_PATH = path.join(ELEMENT_APP_PATH, "app-unpacked");
-// const SYMLINK_PATH = path.join(ELEMENT_APP_PATH, "app");
-// const INJECT_SCRIPT_PATH = path.resolve(__dirname, "../dist/loader.js");
-// const RUNTIME_FILE = path.resolve(ELEMENT_APP_PATH, "../MacOS/Element Nightly");
-// const MAIN_FILE = "lib/electron-main.js";
+if (process.platform === "win32") {
+	// === WINDOWS ==
+	LOCAL_APPDATA = path.join(os.homedir(), "AppData", "Local", "element-desktop-nightly", "app-0.0.1-nightly2025052302");
+
+	ELEMENT_APP_PATH = path.join(LOCAL_APPDATA, "resources");
+	ASAR_PATH = path.join(ELEMENT_APP_PATH, "app.asar");
+	ASAR_BACKUP_PATH = path.join(ELEMENT_APP_PATH, "app.asar.backup");
+	UNPACKED_PATH = path.join(ELEMENT_APP_PATH, "app-unpacked");
+	SYMLINK_PATH = path.join(ELEMENT_APP_PATH, "app");
+	INJECT_SCRIPT_PATH = path.resolve(__dirname, "../dist/loader.js");
+	RUNTIME_FILE = path.join(LOCAL_APPDATA, "Element Nightly.exe");
+	MAIN_FILE = "lib\\electron-main.js";
+} else if (process.platform === "darwin") {
+	// === MAC OS ===
+	ELEMENT_APP_PATH = "/Applications/Element Nightly.app/Contents/Resources";
+	ASAR_PATH = path.join(ELEMENT_APP_PATH, "app.asar");
+	ASAR_BACKUP_PATH = path.join(ELEMENT_APP_PATH, "app.asar.backup");
+	UNPACKED_PATH = path.join(ELEMENT_APP_PATH, "app-unpacked");
+	SYMLINK_PATH = path.join(ELEMENT_APP_PATH, "app");
+	INJECT_SCRIPT_PATH = path.resolve(__dirname, "../dist/loader.js");
+	RUNTIME_FILE = path.resolve(ELEMENT_APP_PATH, "../MacOS/Element Nightly");
+	MAIN_FILE = "lib/electron-main.js";
+}
+// this code is not so sigma
 
 async function main() {
 	console.log("📦 Starting Element injection...");
@@ -57,7 +73,7 @@ async function main() {
 
 	console.log("✏️ Injecting loader...");
 	let code = fs.readFileSync(mainFilePath, "utf8");
-	const injectLine = `import("${INJECT_SCRIPT_PATH.replace(/\\/g, "\\\\")}");`;
+	const injectLine = `import("${pathToFileURL(INJECT_SCRIPT_PATH).href}");`;
 
 	if (code.includes(injectLine)) {
 		console.log("✅ Already injected, skipping.");

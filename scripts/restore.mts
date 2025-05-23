@@ -3,17 +3,36 @@ import fs from "fs-extra";
 import path from "path";
 import { fileURLToPath } from "url";
 import {flipFuses, FuseV1Options, FuseVersion} from "@electron/fuses";
+import os from "os";
 
 // @ts-ignore
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// CHANGE THIS TO YOUR ELEMENT INSTALL
-const ELEMENT_APP_PATH = "/Applications/Element Nightly.app/Contents/Resources";
-const ASAR_PATH = path.join(ELEMENT_APP_PATH, "app.asar");
-const ASAR_BACKUP = path.join(ELEMENT_APP_PATH, "app.asar.backup");
-const UNPACKED_PATH = path.join(ELEMENT_APP_PATH, "app-unpacked");
-const RUNTIME_FILE = path.resolve(path.join(ELEMENT_APP_PATH, "../MacOS/Element Nightly"))
+let LOCAL_APPDATA;
+let ELEMENT_APP_PATH;
+let ASAR_PATH;
+let ASAR_BACKUP;
+let UNPACKED_PATH;
+let RUNTIME_FILE;
+
+if (process.platform === "win32") {
+    // === WINDOWS ==
+    LOCAL_APPDATA = path.join(os.homedir(), "AppData", "Local", "element-desktop-nightly", "app-0.0.1-nightly2025052302");
+
+    ELEMENT_APP_PATH = path.join(LOCAL_APPDATA, "resources");
+    ASAR_PATH = path.join(ELEMENT_APP_PATH, "app.asar");
+    ASAR_BACKUP = path.join(ELEMENT_APP_PATH, "app.asar.backup");
+    UNPACKED_PATH = path.join(ELEMENT_APP_PATH, "app-unpacked");
+    RUNTIME_FILE = "C:\\Users\\kikin\\AppData\\Local\\element-desktop-nightly\\app-0.0.1-nightly2025052204\\Element Nightly.exe";
+} else if (process.platform === "darwin") {
+    // === MAC OS ===
+    ELEMENT_APP_PATH = "/Applications/Element Nightly.app/Contents/Resources";
+    ASAR_PATH = path.join(ELEMENT_APP_PATH, "app.asar");
+    ASAR_BACKUP = path.join(ELEMENT_APP_PATH, "app.asar.backup");
+    UNPACKED_PATH = path.join(ELEMENT_APP_PATH, "app-unpacked");
+    RUNTIME_FILE = path.resolve(ELEMENT_APP_PATH, "../MacOS/Element Nightly");
+}
 
 async function main() {
     console.log("🔁 Restoring Element...");
